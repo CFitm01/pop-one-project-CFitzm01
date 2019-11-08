@@ -1,1 +1,17 @@
+#Function 1 reads the city text file into a list of four tuples.
+file = open("Mock_cities.txt", "r")
+text_file = file.read()
+print(text_file)
 
+def read_cities(text_file):
+    location_list = text_file.split("\t")
+    n = len(location_list)
+    count = 0
+    city_tuples = list()
+    while count != n:
+        city_tuples.append(tuple(location_list[0:4]))
+        del location_list[0:4]
+        count += 4
+    return city_tuples
+
+print(read_cities(text_file))
