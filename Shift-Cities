@@ -1,0 +1,8 @@
+#General structure for shifting cities.
+#Tests to include: preserve length, index comparison, ensure no duplicates, start and end are where they need to be.
+def shift_cities(road_map):
+  start = road_map[-1]
+  for i in range(1, len(road_map)-1):
+    road_map[i] = road_map[i+1]
+    road_map.pop()
+    return road_map
