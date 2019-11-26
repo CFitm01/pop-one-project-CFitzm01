@@ -1,0 +1,23 @@
+
+road_map = [("Alabama", "Birmingham", 1.23, -4.55),\
+            ("Hawaii", "Honolulu", 21.31, -157.83),\
+            ("Arkansas", "Little Rock", 34.74, -69.77)]
+
+def swap_cities(roadmap, index1, index2):
+    if index1 == index2:
+        return roadmap
+    else:
+        roadmap[index1], roadmap[index2] = \
+        roadmap[index2], roadmap[index1]
+#        itemA = roadmap[index1]
+#        itemB = roadmap[index2]
+#        roadmap.remove(itemA)
+#        roadmap.insert(index1, itemB)
+#        roadmap.remove(itemB)
+#        roadmap.insert(index2, itemA)
+        
+    return roadmap
+
+
+
+print(swap_cities(road_map, 0, 2))
