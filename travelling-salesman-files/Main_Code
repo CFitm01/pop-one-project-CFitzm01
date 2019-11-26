@@ -41,10 +41,9 @@ class RoadMap:
                 self.capitols[City] = (Lat, Lon)
             print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
 #            print(len(self.roadmap))
-    
-    #Account for first and last error in this function
+            
     def compute_total_distance(self):
-        n = len(self.roadmap)
+        n = len(self.roadmap)-1
         current_distance = 0
         current_route = self.roadmap
         for i in range(len(self.roadmap)):
@@ -52,7 +51,7 @@ class RoadMap:
             y1 = float(self.roadmap[i][3])
             #This if-statement prevents us from reaching an 'index out of range
             #error, and allows the journey to continue to the finale.
-            if i > (n+1):
+            if i != n:
                 x2 = float(self.roadmap[i+1][2])
                 y2 = float(self.roadmap[i+1][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
