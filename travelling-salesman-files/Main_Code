@@ -41,7 +41,8 @@ class RoadMap:
                 self.capitols[City] = (Lat, Lon)
             print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
 #            print(len(self.roadmap))
-    #Account for first and last error
+    
+    #Account for first and last error in this function
     def compute_total_distance(self):
         n = len(self.roadmap)
         current_distance = 0
