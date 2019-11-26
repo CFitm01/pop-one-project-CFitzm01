@@ -68,14 +68,16 @@ class RoadMap:
             self.best_route = current_route
         return print("The current route is: " + str(current_distance)+ "\n" + \
                      "The best route is: " + str(self.best_distance))
-                
-            
+                  
+    def shift_cities(self):
+        start = self.roadmap[-1]
+        self.roadmap.pop()
+        self.roadmap.insert(0, start)
+        return self.roadmap
             
             
 
         
 
 road_map = RoadMap()
-
 road_map.read_cities(text_file)
-road_map.compute_total_distance()
