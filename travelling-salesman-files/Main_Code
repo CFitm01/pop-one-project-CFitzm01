@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov  8 14:29:35 2019
+Created on Tue Dec  3 20:21:04 2019
 
 @author: CFitz
 """
+
 import math
+import random as rand
+import numpy as py
 
 #file = open("city-data.txt", "r")
 file = open("Mock_cities.txt", "r")
 text_file = file.read()
 text_file = text_file.replace("\n", "\t")
 
-class RoadMap:
+class Salesman:
 #generates a class instance RoadMap
     
     def __init__(self):
+        self.count = 0
+        self.iter = 0
         self.roadmap = []
         #So far a dict isn't required but it may prove useful.
         #This is done as part of the print_cities function.
@@ -28,7 +33,7 @@ class RoadMap:
         locations = text_file.split("\t")
         for i in range(0, len(locations), 4):
             self.roadmap.append(tuple(locations[i:i+4]))
-        return self.roadmap
+        return road_map.print_cities()
 
     def print_cities(self):
         for i in range(len(self.roadmap)):
@@ -40,7 +45,7 @@ class RoadMap:
             if City not in self.capitols:
                 self.capitols[City] = (Lat, Lon)
             print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
-#            print(len(self.roadmap))
+        return road_map.compute_total_distance()
             
     def compute_total_distance(self):
         n = len(self.roadmap)-1
@@ -66,8 +71,11 @@ class RoadMap:
         if current_distance < self.best_distance or self.best_distance == 0:
             self.best_distance = current_distance
             self.best_route = current_route
-        return print("The current route is: " + str(current_distance)+ "\n" + \
+        print("The current route is: " + str(current_distance)+ "\n" + \
                      "The best route is: " + str(self.best_distance))
+        road_map.shift_cities()
+        return road_map.swap_cities(rand.randint(1,len(self.roadmap)-1),\
+                                    rand.randint(1,len(self.roadmap)-1))
                   
     def shift_cities(self):
         start = self.roadmap[-1]
@@ -75,9 +83,27 @@ class RoadMap:
         self.roadmap.insert(0, start)
         return self.roadmap
             
-            
+    def swap_cities(self, index1, index2):
+        if index1 == index2:
+            return self.roadmap
+        else:
+            self.roadmap[index1], self.roadmap[index2] = \
+            self.roadmap[index2],self.roadmap[index1]
+        self.count += 1
+        if self.count < int(self.iter):
+            return road_map.print_cities()
+    
+    def __main__(self):
+        input("Please select your txt file.")
+        iterations = input("Please select how many iterations you would like to\
+                           run: ")
+        self.iter = iterations
+        road_map.read_cities(text_file)
+        if self.count < int(self.iter):
+            self.print_cities(self.roadmap)
 
         
 
-road_map = RoadMap()
-road_map.read_cities(text_file)
+road_map = Salesman()
+#road_map.read_cities(text_file)
+road_map.__main__()
