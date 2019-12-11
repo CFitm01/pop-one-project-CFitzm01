@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec  3 20:21:04 2019
+Created on Fri Nov  8 14:29:35 2019
 
 @author: CFitz
 """
-
 import math
 import random as rand
 import numpy as py
@@ -33,7 +32,7 @@ class Salesman:
         locations = text_file.split("\t")
         for i in range(0, len(locations), 4):
             self.roadmap.append(tuple(locations[i:i+4]))
-        return road_map.print_cities()
+        return self.roadmap
 
     def print_cities(self):
         for i in range(len(self.roadmap)):
@@ -45,25 +44,25 @@ class Salesman:
             if City not in self.capitols:
                 self.capitols[City] = (Lat, Lon)
             print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
-        return road_map.compute_total_distance()
+#            print(len(self.roadmap))
             
     def compute_total_distance(self):
         n = len(self.roadmap)-1
         current_distance = 0
         current_route = self.roadmap
-        for i in range(len(self.roadmap)):
-            x1 = float(self.roadmap[i][2])
-            y1 = float(self.roadmap[i][3])
+        for i in range(len(current_route)):
+            x1 = float(current_route[i][2])
+            y1 = float(current_route[i][3])
             #This if-statement prevents us from reaching an 'index out of range
             #error, and allows the journey to continue to the finale.
             if i != n:
-                x2 = float(self.roadmap[i+1][2])
-                y2 = float(self.roadmap[i+1][3])
+                x2 = float(current_route[i+1][2])
+                y2 = float(current_route[i+1][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += float(ans)
             else:
-                x2 = float(self.roadmap[0][2])
-                y2 = float(self.roadmap[0][3])
+                x2 = float(current_route[0][2])
+                y2 = float(current_route[0][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += round(float(ans),2)
         #This removes the need to place an arbitrary value of distance for the
@@ -71,11 +70,8 @@ class Salesman:
         if current_distance < self.best_distance or self.best_distance == 0:
             self.best_distance = current_distance
             self.best_route = current_route
-        print("The current route is: " + str(current_distance)+ "\n" + \
+        return print("The current route is: " + str(current_distance)+ "\n" + \
                      "The best route is: " + str(self.best_distance))
-        road_map.shift_cities()
-        return road_map.swap_cities(rand.randint(1,len(self.roadmap)-1),\
-                                    rand.randint(1,len(self.roadmap)-1))
                   
     def shift_cities(self):
         start = self.roadmap[-1]
@@ -89,21 +85,31 @@ class Salesman:
         else:
             self.roadmap[index1], self.roadmap[index2] = \
             self.roadmap[index2],self.roadmap[index1]
-        self.count += 1
-        if self.count < int(self.iter):
-            return road_map.print_cities()
+        return self.roadmap
     
     def __main__(self):
-        input("Please select your txt file.")
-        iterations = input("Please select how many iterations you would like to\
-                           run: ")
-        self.iter = iterations
-        road_map.read_cities(text_file)
-        if self.count < int(self.iter):
-            self.print_cities(self.roadmap)
+        Road_Map = input("Please select the txt file that you wish to use\
+                     note: please insure in current dirrectory.")
+        Map = read_cities(Road_Map)
+        print("The current road map is: " + str(Map))
 
         
 
 road_map = Salesman()
-#road_map.read_cities(text_file)
 road_map.__main__()
+
+#It now comes to a stage where we are to iterate through the different
+#combinations and come up with a stopping point.
+
+#From the brief, it should look as follows:
+#On boot it should ask you which file you wish to run the problem through.
+#For now, it should also ask how many iterations you wish to do.
+#For this length of iterations, it should loop throughout the program:
+#-Displays a map of the current path.
+#-Displays the distance of the current path.
+#-Displays the best current distance.
+#-While the count is less than the iteration, it should repeat this process,
+#with a combination of city shift and city swap.
+#Main->Read_Cities->ComputeTotalDistance->ShiftCities->SwapCities->ComputeTotal
+#Distance
+#etc, something along these lines.
