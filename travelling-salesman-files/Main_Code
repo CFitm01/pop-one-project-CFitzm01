@@ -1,6 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov  8 14:29:35 2019
+
+@author: CFitz
+"""
 import math
 import random as rand
 import numpy as py
+import copy
 
 #file = open("city-data.txt", "r")
 #file = open("Mock_cities.txt", "r")
@@ -69,13 +76,13 @@ class Salesman:
             if City not in self.capitols:
                 self.capitols[City] = (Lat, Lon)
             print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
-#            print(len(self.roadmap))
+
             
     def compute_total_distance(self):
         n = len(self.roadmap)-1
         current_distance = 0
-        current_route = self.roadmap
-        for i in range(len(current_route)):
+        current_route = copy.deepcopy(self.roadmap)
+        for i in range(n):
             x1 = float(current_route[i][2])
             y1 = float(current_route[i][3])
             #This if-statement prevents us from reaching an 'index out of range
@@ -90,13 +97,18 @@ class Salesman:
                 y2 = float(current_route[0][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += round(float(ans),2)
-        #This removes the need to place an arbitrary value of distance for the
-        #route, otherwise the best route would always remain '0'
-        if current_distance < self.best_distance:
+        print("The current route is: " + str(current_distance))
+        if self.best_distance == 0:
             self.best_distance = current_distance
             self.best_route = current_route
-        return print("The current route is: " + str(current_distance)),\
-                self.best_distance, self.best_route
+            return print("New Best!")
+        elif self.best_distance > current_distance:
+            self.best_distance = current_distance
+            self.best_route = current_route
+            return print("New Best!")
+            
+                
+
                   
     def shift_cities(self):
         start = self.roadmap[-1]
@@ -120,3 +132,19 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#It now comes to a stage where we are to iterate through the different
+#combinations and come up with a stopping point.
+
+#From the brief, it should look as follows:
+#On boot it should ask you which file you wish to run the problem through.
+#For now, it should also ask how many iterations you wish to do.
+#For this length of iterations, it should loop throughout the program:
+#-Displays a map of the current path.
+#-Displays the distance of the current path.
+#-Displays the best current distance.
+#-While the count is less than the iteration, it should repeat this process,
+#with a combination of city shift and city swap.
+#Main->Read_Cities->ComputeTotalDistance->ShiftCities->SwapCities->ComputeTotal
+#Distance
+#etc, something along these lines.
