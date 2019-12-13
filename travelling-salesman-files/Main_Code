@@ -1,150 +1,132 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov  8 14:29:35 2019
+Created on Fri Dec 13 14:15:03 2019
 
 @author: CFitz
 """
-import math
 import random as rand
-import numpy as py
 import copy
+import math
 
-#file = open("city-data.txt", "r")
-#file = open("Mock_cities.txt", "r")
-#text_file = file.read()
-#text_file = text_file.replace("\n", "\t")
+rand.seed(404)
 
-#if __name__ == '__main__':
-#    main()
+
+def main():
+    #This is the main function, that automates and keeps track of the
+    #number of iterations listed, and to be listed.
+    count = 0
+    Road_Map = input("Please select the txt file that you wish to use: ")
+    iterations = int(input("Please enter the number of iterations you wish to run:"))
+    Traveling_Salesman = Salesman(iterations)
+    Traveling_Salesman.read_cities(Road_Map)
+    n = Traveling_Salesman.determine_length()-1
+    Prompt = input("Do you wish to view the initial map?: Y/N")
+    if Prompt.upper() == 'Y' or Prompt.upper() == 'YES':
+        Traveling_Salesman.print_cities()
+    while count < iterations:
+        Traveling_Salesman.shift_cities()
+        Traveling_Salesman.swap_cities(rand.randint(0, n), rand.randint(0, n))
+        Traveling_Salesman.compute_total_distance()
+        count+=1
+    print("After {} iterations, the best distance acheived was: "\
+          .format(iterations))
+    Traveling_Salesman.best_distance()
+    print("The best path found was: ")
+    Traveling_Salesman.best_path()
+    
+        
+
+
 
 class Salesman:
 #generates a class instance RoadMap
     
-    def __init__(self):
-        self.count = 0
-        self.iter = 0
-        self.roadmap = []
-        self.length = 0
-        #So far a dict isn't required but it may prove useful.
-        #This is done as part of the print_cities function.
-        self.capitols = dict()
-        self.best_distance = 0
-        self.best_route = []
-    
+    def __init__(self, iterations):
+        self.map_length = 0
+        self.current_path = [] #This is the record of the path.
+        self.current_distance = 0 #This is a record of the distance (euclidean) of the curent path.
+        self.best_path = [] #This is a record of the path associated with the lowest distance.
+        self.best_distance = 0 #This is a record of the lowest distance.
         
-    def __main__(self):
-        self.count
-        road_map = Salesman()
-        Road_Map = input("Please select the txt file that you wish to use: ")
-        road_map.read_cities(Road_Map)
-        display = input("Do you wish to view this Road Map? Y/N: ")
-        if display.upper() == 'Y':
-            road_map.print_cities()
-        road_map.compute_total_distance()
-        iterations = input("How many iterations would you like to run?: ")
-        self.iter = int(iterations)
-        while int(self.count) < int(self.iter):
-            road_map.shift_cities()
-#            road_map.swap_cities(rand.randint(1, self.length),\
-#                                 rand.randint(1, self.length))
-            road_map.compute_total_distance()
-            self.count+=1
-        print("The program has finished after {} iterations.".format(self.iter))
-        print("The shortest route acheived was: {}.".format(self.best_distance))
-        print("The best map was: {}".format(self.best_route))
-        
-    
-    #this function sucessfully assigns the map to a class instance.
+
     def read_cities(self, file):
         file_o = open(str(file), "r")
         text_file = file_o.read()
         text_file = text_file.replace("\n", "\t")        
         locations = text_file.split("\t")
         for i in range(0, len(locations), 4):
-            self.roadmap.append(tuple(locations[i:i+4]))
-        self.length = len(self.roadmap)
-        self.best_route = self.roadmap
-        return self.roadmap
-
-    def print_cities(self):
-        for i in range(len(self.roadmap)):
-            City = self.roadmap[i][1]
-            Lat = round(float(self.roadmap[i][2]),2)
-            Lon = round(float(self.roadmap[i][3]),2)
-            #The below will account for if errors are generated when
-            #shifting cities.
-            if City not in self.capitols:
-                self.capitols[City] = (Lat, Lon)
-            print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
+            self.current_path.append(tuple(locations[i:i+4]))
+            #The above moves all of the values to a list of current path
+        self.map_length = int(len(self.current_path)-1)
+        return self.current_path
+    
+    def determine_length(self):
+        return self.map_length
+    
+    def shift_cities(self):
+        start = self.current_path[-1]
+        self.current_path.pop()
+        self.current_path.insert(0, start)
+        return self.current_path
+    
+    def swap_cities(self, index1, index2):
+        if index1 == index2:
+            return self.current_path
+        else:
+            self.current_path[index1], self.current_path[index2] = \
+            self.current_path[index2],self.current_path[index1]
+        return self.current_path
 
             
     def compute_total_distance(self):
-        n = len(self.roadmap)-1
+        n = len(self.current_path)-1
         current_distance = 0
-        current_route = copy.deepcopy(self.roadmap)
         for i in range(n):
-            x1 = float(current_route[i][2])
-            y1 = float(current_route[i][3])
+            x1 = float(self.current_path[i][2])
+            y1 = float(self.current_path[i][3])
             #This if-statement prevents us from reaching an 'index out of range
             #error, and allows the journey to continue to the finale.
             if i != n:
-                x2 = float(current_route[i+1][2])
-                y2 = float(current_route[i+1][3])
+                x2 = float(self.current_path[i+1][2])
+                y2 = float(self.current_path[i+1][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += round(float(ans),2)
             else:
-                x2 = float(current_route[0][2])
-                y2 = float(current_route[0][3])
+                x2 = float(self.current_path[0][2])
+                y2 = float(self.current_path[0][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += round(float(ans),2)
         print("The current route is: " + str(current_distance))
-        if self.best_distance == 0:
+        self.current_distance = current_distance
+        if len(self.best_path) == 0:
             self.best_distance = current_distance
-            self.best_route = current_route
-            return print("New Best!")
-        elif self.best_distance > current_distance:
-            self.best_distance = current_distance
-            self.best_route = current_route
-            return print("New Best!")
-            
-                
-
-                  
-    def shift_cities(self):
-        start = self.roadmap[-1]
-        self.roadmap.pop()
-        self.roadmap.insert(0, start)
-        return self.roadmap
-            
-    def swap_cities(self, index1, index2):
-        if index1 == index2:
-            return self.roadmap
+            self.best_path = copy.deepcopy(self.current_path)
         else:
-            self.roadmap[index1], self.roadmap[index2] = \
-            self.roadmap[index2],self.roadmap[index1]
-        return self.roadmap
+            if current_distance < self.best_distance:
+                self.best_distance = current_distance
+                del self.best_path
+                self.best_path = copy.deepcopy(self.current_path)
+                print("New Best!")
+        print("The current distance is: " + str(current_distance))
+        return self.current_path
+    
+    def print_cities(self):
+        for i in range(len(self.current_path)):
+            City = self.current_path[i][1]
+            Lat = round(float(self.current_path[i][2]),2)
+            Lon = round(float(self.current_path[i][3]),2)
+            print(City + " " + "Lat: " + str(Lat) + " Lon: " + str(Lon))
 
-            
+    def best_path(self):
+        return print(self.best_path)
+    
+    def best_distance(self):
+        return print(self.best_distance)
         
-def main():
-    road_map=Salesman()
-    road_map.__main__()
 
+        
+
+
+    
 if __name__ == '__main__':
     main()
-
-#It now comes to a stage where we are to iterate through the different
-#combinations and come up with a stopping point.
-
-#From the brief, it should look as follows:
-#On boot it should ask you which file you wish to run the problem through.
-#For now, it should also ask how many iterations you wish to do.
-#For this length of iterations, it should loop throughout the program:
-#-Displays a map of the current path.
-#-Displays the distance of the current path.
-#-Displays the best current distance.
-#-While the count is less than the iteration, it should repeat this process,
-#with a combination of city shift and city swap.
-#Main->Read_Cities->ComputeTotalDistance->ShiftCities->SwapCities->ComputeTotal
-#Distance
-#etc, something along these lines.
