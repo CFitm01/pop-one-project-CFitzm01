@@ -28,12 +28,14 @@ def main():
         Traveling_Salesman.swap_cities(rand.randint(0, n), rand.randint(0, n))
         Traveling_Salesman.compute_total_distance()
         count+=1
-    print("After {} iterations, the best distance acheived was: "\
-          .format(iterations))
-    Traveling_Salesman.best_distance()
-    print("The best path found was: ")
-    Traveling_Salesman.best_path()
-    
+    Best_Distance = Traveling_Salesman.best_distance
+    Best_Path = Traveling_Salesman.best_path
+    print("After {} iterations, the best distance acheived was: {}"\
+          .format(iterations,Best_Distance))
+    view = input("Do you wish to view the best path? Y/N")
+    if view.upper() == 'Y':
+        print("The best path found was: \n {}".format(Best_Path))
+#    
         
 
 
@@ -121,7 +123,7 @@ class Salesman:
         return print(self.best_path)
     
     def best_distance(self):
-        return print(self.best_distance)
+        return print(str(self.best_distance))
         
 
         
