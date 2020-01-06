@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 13 14:15:03 2019
-
-@author: CFitz
-"""
 import random as rand
 import copy
 import math
+import matplotlib.pyplot as plt
 
 rand.seed(404)
 
@@ -17,17 +12,23 @@ def main():
     count = 0
     Road_Map = input("Please select the txt file that you wish to use: ")
     iterations = int(input("Please enter the number of iterations you wish to run:"))
+    view = input("Do you wish to view each map in visual form? Y/N (This will greatly increase runtime.):")
     Traveling_Salesman = Salesman(iterations)
     Traveling_Salesman.read_cities(Road_Map)
     n = Traveling_Salesman.determine_length()-1
     Prompt = input("Do you wish to view the initial map?: Y/N")
     if Prompt.upper() == 'Y' or Prompt.upper() == 'YES':
         Traveling_Salesman.print_cities()
+        Traveling_Salesman.visualise()
+    Start = input("Hit enter to begin program.")
     while count < iterations:
         Traveling_Salesman.shift_cities()
         Traveling_Salesman.swap_cities(rand.randint(0, n), rand.randint(0, n))
         Traveling_Salesman.compute_total_distance()
+        if view.upper() == "Y" or view.upper() == "YES":
+            Traveling_Salesman.visualise()
         count+=1
+    Traveling_Salesman.completed()
     Best_Distance = Traveling_Salesman.best_distance
     Best_Path = Traveling_Salesman.best_path
     print("After {} iterations, the best distance acheived was: {}"\
@@ -35,6 +36,7 @@ def main():
     view = input("Do you wish to view the best path? Y/N")
     if view.upper() == 'Y':
         print("The best path found was: \n {}".format(Best_Path))
+        Traveling_Salesman.visualise()
 #    
         
 
@@ -49,6 +51,7 @@ class Salesman:
         self.current_distance = 0 #This is a record of the distance (euclidean) of the curent path.
         self.best_path = [] #This is a record of the path associated with the lowest distance.
         self.best_distance = 0 #This is a record of the lowest distance.
+        self.count = 0
         
 
     def read_cities(self, file):
@@ -98,7 +101,7 @@ class Salesman:
                 y2 = float(self.current_path[0][3])
                 ans = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
                 current_distance += round(float(ans),2)
-        print("The current route is: " + str(current_distance))
+#        print("The current route is: " + str(current_distance))
         self.current_distance = current_distance
         if len(self.best_path) == 0:
             self.best_distance = current_distance
@@ -110,7 +113,7 @@ class Salesman:
                 self.best_path = copy.deepcopy(self.current_path)
                 print("New Best!")
         print("The current distance is: " + str(current_distance))
-        return self.current_path
+#        return self.current_path
     
     def print_cities(self):
         for i in range(len(self.current_path)):
@@ -124,6 +127,30 @@ class Salesman:
     
     def best_distance(self):
         return print(str(self.best_distance))
+    
+    def visualise(self):
+        x = []
+        y = []
+        names = []
+        if self.completed == 1:
+            for i in range(len(self.best_path)-1):
+                x.append(round(float(self.best_path[i][2]),2))
+                y.append(round(float(self.best_path[i][3]), 2))
+                names.append((self.best_path[i][0],self.best_path[i][1]))
+            plt.plot(x,y)
+            for i in range(len(self.current_path)-1):
+                plt.annotate(names[i], (x[i],y[i]))
+        else:
+            for i in range(len(self.current_path)-1):
+                x.append(round(float(self.current_path[i][2]),2))
+                y.append(round(float(self.current_path[i][3]), 2))
+                #names.append((self.current_path[i][0],self.current_path[i][1]))
+            plt.plot(x,y)
+        plt.show()
+    
+    def completed(self):
+        self.completed = 1
+        return self.completed
         
 
         
