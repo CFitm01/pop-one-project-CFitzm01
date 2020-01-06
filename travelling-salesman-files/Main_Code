@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 13 14:15:03 2019
+
+@author: CFitz
+"""
 import random as rand
 import copy
 import math
@@ -106,11 +112,13 @@ class Salesman:
         if len(self.best_path) == 0:
             self.best_distance = current_distance
             self.best_path = copy.deepcopy(self.current_path)
+            self.best_path.append(self.best_path[0])
         else:
             if current_distance < self.best_distance:
                 self.best_distance = current_distance
                 del self.best_path
                 self.best_path = copy.deepcopy(self.current_path)
+                self.best_path.append(self.best_path[0])
                 print("New Best!")
         print("The current distance is: " + str(current_distance))
 #        return self.current_path
@@ -151,11 +159,3 @@ class Salesman:
     def completed(self):
         self.completed = 1
         return self.completed
-        
-
-        
-
-
-    
-if __name__ == '__main__':
-    main()
